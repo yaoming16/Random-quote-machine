@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+}
+
+#quote-box {
+    background-color: white;
+    max-width: 800px;
+    margin: auto auto; 
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%); 
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+button {
+    color: white;
+    border: none;
+}
+
+#new-quote {
+    width: 150px;
+}
+
+
