@@ -1,29 +1,33 @@
 $(document).ready(async function () {
-
-  let quotes = await quotesFetch(url);
-  addQuote(quotes);
+  
+  let url = "https://api.quotable.io/quotes/random?tags=famous-quotes";
+  await addQuote(url);
   animateCSS("#quote-box", "zoomIn");
   $("#new-quote").click(async () => {
-    addQuote(quotes);
+    await addQuote(url);
     animateCSS("#quote-box", "zoomIn");
 
   })
 
 })
 
-let url = "https://type.fit/api/quotes";
-async function quotesFetch(url) {
+async function quoteFetch(url) {
   let response = await fetch(url);
-  let quotes = await response.json();
-  return quotes;
+  let quote = await response.json();
+  return quote;
 }
 
-function addQuote(quotes) {
+async function  addQuote(url) {
 
-  let index = Math.round(Math.random() * quotes.length);
-  $("#text").text(quotes[index].text)
-  $("#author").text(quotes[index].author)
-  $("#tweet-quote").prop("href", `https://twitter.com/intent/tweet?text=${quotes[index].text} - ${quotes[index].author}`)
+  // From quote fetch we get an array with all the quotes that we requested
+  let quote = await quoteFetch(url);
+  quote = quote[0];
+  let textToAdd = quote.content;
+  let authorToAdd = quote.author;
+ 
+  $("#text").text(textToAdd);
+  $("#author").text(authorToAdd);
+  $("#tweet-quote").prop("href", `https://twitter.com/intent/tweet?text=${textToAdd} - ${authorToAdd}`);
 
   let rgb1 = Math.round(Math.random() * 255);
   let rgb2 = Math.round(Math.random() * rgb1);
