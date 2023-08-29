@@ -16,8 +16,8 @@ $(document).ready(async function () {
 })
 
 function setUrl() {
-  let category = $("#categorySelect").val();
-  let author = $("#authorInput").val();
+  let category = $("#categorySelect").val().toLowerCase();
+  let author = $("#authorInput").val().toLowerCase();
   let url = "https://api.quotable.io/quotes/random?tags=";
 
   // Check if famous option is selected and add the tag to the url 
