@@ -1,30 +1,82 @@
 $(document).ready(async function () {
   
-  let url = "https://api.quotable.io/quotes/random?tags=famous-quotes";
+  let allTagsUrl = "https://api.quotable.io/tags";
+  let allTags = await getJson(allTagsUrl);
+  for (tag of allTags) {
+    $("#categorySelect").append(`<option value="${tag.slug}">${tag.name}</option>`)
+  }
+  let url = setUrl();
   await addQuote(url);
   animateCSS("#quote-box", "zoomIn");
   $("#new-quote").click(async () => {
+    url = setUrl();
     await addQuote(url);
     animateCSS("#quote-box", "zoomIn");
-
   })
-
 })
 
-async function quoteFetch(url) {
+function setUrl() {
+  let category = $("#categorySelect").val();
+  let author = $("#authorInput").val();
+  let url = "https://api.quotable.io/quotes/random?tags=";
+
+  // Check if famous option is selected and add the tag to the url 
+  if ($('#famous').is(':checked')) {
+    url +='famous-quotes';   
+  } 
+  
+
+  // Check if a category option is selected and add the tag to the url 
+  if (category.trim() && category != "all") {
+    if (!url.endsWith("=")) {
+      url += `,${category}`;
+    } else {
+      url += `${category}`;
+    }  
+  }
+
+  // Check if an author was writen and add the tag to the url
+  if (author.trim()) {
+    url += "&author=";
+    // This for is in case the name of the author has more than one word
+    let authorNames = author.split(" ");
+    for (i = 0; i < authorNames.length; i++) {
+      if (i != authorNames.length - 1) {
+        url += `${authorNames[i]}-`;
+      } else {
+        url += `${authorNames[i]}`;
+      }
+    }
+  }
+  console.log(url)
+  return url;
+}
+
+// Fetch json 
+async function getJson(url) {
   let response = await fetch(url);
-  let quote = await response.json();
-  return quote;
+  let data = await response.json();
+  return data;
+}
+
+
+// Function to get a quote from the API and return the quote text and author in an  Array 
+async function quoteFetch(url) {
+  let quote = await getJson(url);
+  try {
+    return [quote[0].content, quote[0].author];
+  } catch {
+    return ["We could not get a quote with those parameters, please try again with different ones", ""]
+  }
 }
 
 async function  addQuote(url) {
 
   // From quote fetch we get an array with all the quotes that we requested
   let quote = await quoteFetch(url);
-  quote = quote[0];
-  let textToAdd = quote.content;
-  let authorToAdd = quote.author;
- 
+  let textToAdd = quote[0];
+  let authorToAdd = quote[1];
+  
   $("#text").text(textToAdd);
   $("#author").text(authorToAdd);
   $("#tweet-quote").prop("href", `https://twitter.com/intent/tweet?text=${textToAdd} - ${authorToAdd}`);
